@@ -1,0 +1,41 @@
+name: 🚀 Demo Deploy (Dry Run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to simulate deploy from'
+        required: true
+        default: 'master'
+
+jobs:
+  demo-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up SSH key (mock setup)
+        run: |
+          mkdir -p ~/.ssh
+          echo "Pretending to set up SSH key"
+          echo "${{ secrets.DD_STAGING_KEY }}" > ~/.ssh/dd_staging.pem
+          chmod 600 ~/.ssh/dd_staging.pem
+          echo "Pretending to scan SSH host"
+          echo "ec2-31-130-70-80.us-east-2.compute.amazonaws.com ssh-rsa MOCK_KEY" >> ~/.ssh/known_hosts
+
+      - name: Simulate deployment script
+        run: |
+          echo "=============================="
+          echo "🚀 Simulating Deployment..."
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "SSH Key Path: ~/.ssh/dd_staging.pem"
+          echo "Tag Name: npod/s2p_testing"
+          echo "Port: 443"
+          echo "Server: ubuntu@ec2-31-130-70-80.us-east-2.compute.amazonaws.com"
+          echo "Skipping build.sh, docker, and ssh calls..."
+          echo "✅ Workflow executed successfully (dry run)"
+          echo "=============================="
